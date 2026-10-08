@@ -22,7 +22,16 @@ Check `http://127.0.0.1:8000/health` for `{"status":"ok"}`.
 
 ## Recognize an image
 
-Upload a file:
+With the included test client (start the server first):
+
+```bash
+python test_client.py note.png
+# To target a different server: python test_client.py note.png --url http://localhost:9000/recognize
+```
+
+The client sends base64 JSON and prints the full API response. It uses only the Python standard library.
+
+Upload a file with curl:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/recognize -F 'image=@note.png'
