@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.cheque.ReviewController" style="-fx-padding: 14;">
+  <top><VBox spacing="10">
+    <HBox spacing="10" alignment="CENTER_LEFT">
+      <Button text="Open cheque image" onAction="#openImage"/>
+      <Label text="OCR URL:"/><TextField fx:id="url" text="http://127.0.0.1:8000/recognize" prefWidth="360"/>
+      <Button fx:id="scanButton" text="Run OCR" onAction="#scan"/>
+      <Label text="Bank:"/><ComboBox fx:id="bankSelector" prefWidth="210"/>
+    </HBox>
+    <Label fx:id="status" text="Select an image, then run OCR. Choose a bank profile before reviewing." wrapText="true"/>
+  </VBox></top>
+  <center><SplitPane dividerPositions="0.52">
+    <ScrollPane fitToWidth="true" fitToHeight="true"><content><Pane fx:id="imagePane"><children><ImageView fx:id="imageView" preserveRatio="true" fitWidth="570"/></children></Pane></content></ScrollPane>
+    <VBox spacing="8" style="-fx-padding: 10;">
+      <Label text="Review fields (select a row to highlight its OCR evidence)"/>
+      <TableView fx:id="fields" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="nameColumn" text="Field" prefWidth="105"/>
+          <TableColumn fx:id="rawColumn" text="Raw OCR" prefWidth="160"/>
+          <TableColumn fx:id="correctedColumn" text="Corrected" prefWidth="155"/>
+          <TableColumn fx:id="confidenceColumn" text="Confidence" prefWidth="90"/>
+          <TableColumn fx:id="stateColumn" text="Status" prefWidth="90"/>
+        </columns>
+      </TableView>
+      <Label text="Raw evidence (never edited)"/><TextArea fx:id="rawText" editable="false" prefRowCount="2" wrapText="true"/>
+      <Label text="Corrected value"/><TextField fx:id="correction" onAction="#accept"/>
+      <HBox spacing="8"><Button text="Accept / Save correction" onAction="#accept"/><Button text="Accept all valid" onAction="#acceptValid"/><Button text="Save review JSON" onAction="#save"/></HBox>
+      <Label text="Original OCR text"/><TextArea fx:id="allText" editable="false" prefRowCount="4" wrapText="true"/>
+    </VBox>
+  </SplitPane></center>
+</BorderPane>

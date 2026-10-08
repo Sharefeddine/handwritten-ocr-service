@@ -1,0 +1,16 @@
+{
+  "bankId": "BNA",
+  "displayName": "Banque Nationale d'Algérie",
+  "aliases": ["BNA", "BANQUE NATIONALE D ALGERIE"],
+  "zones": {
+    "bank": [0.02, 0.00, 0.48, 0.22],
+    "reference": [0.03, 0.02, 0.27, 0.16],
+    "amountDigits": [0.72, 0.02, 0.26, 0.16],
+    "amountWords": [0.06, 0.30, 0.86, 0.16],
+    "beneficiary": [0.06, 0.42, 0.60, 0.16],
+    "date": [0.68, 0.42, 0.28, 0.16],
+    "drawer": [0.30, 0.67, 0.42, 0.18]
+  },
+  "minimumConfidence": {"bank": 0.90, "reference": 0.95, "amountDigits": 0.90, "amountWords": 0.90, "beneficiary": 0.78, "date": 0.85, "drawer": 0.85},
+  "referenceLengths": [7]
+}

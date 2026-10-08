@@ -58,3 +58,18 @@ Example response:
 ```
 
 The service explicitly disables GPU inference. Model loading and any initial download happen on the first recognition request; `/health` does not load the model.
+
+## JavaFX cheque review client (experimental)
+
+The `java-client/` Maven project is a separate, local review application. Install **JDK 17+** and **Maven 3.9+** with JavaFX-compatible desktop support. Start the Python service, then in another terminal run:
+
+```bash
+cd java-client
+mvn javafx:run
+```
+
+Choose an image, click **Run OCR**, choose the bank profile if it was not detected, review each row, and save the review JSON. The application calls `/recognize` with base64 JSON; no Java-side OCR model is needed. The Python response now includes a pixel `bbox: [left, top, right, bottom]` for every OCR line, in addition to `text` and `confidence`. Existing Python test-client output remains compatible.
+
+The included **BNA profile is an illustrative starting point**, not a verified production bank layout. It uses relative zones on the *original, unrectified image*. Align/crop cheques consistently and calibrate the profile for your actual scans. A line is assigned by its bounding-box center; overlapping zones or text crossing zones may yield incorrect field assignments. The overlay highlights the first line assigned to a selected field. Bank detection is alias-based and must be confirmed by a reviewer. When editing profile zones, restart the Java application.
+
+Review keeps the original OCR response and each field's raw value alongside its corrected value, confidence, status, and correction reason. **No automatic final acceptance**: low-confidence, missing, or invalid fields require review, and saving requires every field to be explicitly accepted. Numeric and date suggestions are only hints; the user must verify them. There is no amount-in-words cross-check, rectification, persistent learning pipeline, or production-grade financial validation yet. Do not treat saved reviews as verified payment instructions without your own checks. Review JSON may contain sensitive financial information; store it securely.

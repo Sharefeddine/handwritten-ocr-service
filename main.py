@@ -115,7 +115,14 @@ def recognize_image(data: bytes):
     for page in result or []:
         for item in page or []:
             text, confidence = item[1]
-            lines.append({"text": text, "confidence": float(confidence)})
+            points = item[0]
+            bbox = [
+                int(min(point[0] for point in points)),
+                int(min(point[1] for point in points)),
+                int(max(point[0] for point in points)),
+                int(max(point[1] for point in points)),
+            ]
+            lines.append({"text": text, "confidence": float(confidence), "bbox": bbox})
     took_ms = round((time.perf_counter() - start) * 1000, 2)
     logger.info("recognition_completed", extra={"line_count": len(lines), "duration_ms": took_ms})
     return {
