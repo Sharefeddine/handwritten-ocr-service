@@ -15,10 +15,16 @@ pip install -r requirements.txt
 ## Run
 
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --no-access-log
 ```
 
 Check `http://127.0.0.1:8000/health` for `{"status":"ok"}`.
+
+Application logs are one JSON object per line on stdout. Each request logs `request_completed` with UTC timestamp, HTTP method, path, status code, and total duration. Successful OCR also logs `recognition_completed` with inference duration and line count. Image data and recognized text are **not** logged. `--no-access-log` avoids duplicate plain-text Uvicorn access entries; Uvicorn startup/error messages may still use its default format.
+
+```json
+{"timestamp":"2026-10-08T12:00:00+00:00","level":"INFO","event":"request_completed","method":"POST","path":"/recognize","status_code":200,"duration_ms":153.4}
+```
 
 ## Recognize an image
 

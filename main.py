@@ -3,7 +3,11 @@
 import base64
 import binascii
 import io
+import json
+import logging
+import sys
 import time
+from datetime import datetime, timezone
 from functools import lru_cache
 
 import numpy as np
@@ -13,6 +17,48 @@ from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
 
 app = FastAPI(title="Handwritten OCR Service")
+
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        entry = {
+            "timestamp": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),
+            "level": record.levelname,
+            "event": record.getMessage(),
+        }
+        for field in ("method", "path", "status_code", "duration_ms", "line_count"):
+            if hasattr(record, field):
+                entry[field] = getattr(record, field)
+        return json.dumps(entry)
+
+
+logger = logging.getLogger("handwritten_ocr")
+logger.setLevel(logging.INFO)
+logger.propagate = False
+if not logger.handlers:
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(JsonFormatter())
+    logger.addHandler(handler)
+
+
+@app.middleware("http")
+async def log_request(request: Request, call_next):
+    start = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        logger.info(
+            "request_completed",
+            extra={
+                "method": request.method,
+                "path": request.url.path,
+                "status_code": status_code,
+                "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+            },
+        )
 
 
 @lru_cache(maxsize=1)
@@ -70,10 +116,12 @@ def recognize_image(data: bytes):
         for item in page or []:
             text, confidence = item[1]
             lines.append({"text": text, "confidence": float(confidence)})
+    took_ms = round((time.perf_counter() - start) * 1000, 2)
+    logger.info("recognition_completed", extra={"line_count": len(lines), "duration_ms": took_ms})
     return {
         "text": "\n".join(line["text"] for line in lines),
         "lines": lines,
-        "took_ms": round((time.perf_counter() - start) * 1000, 2),
+        "took_ms": took_ms,
     }
 
 
