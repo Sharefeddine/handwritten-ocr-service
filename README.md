@@ -35,7 +35,7 @@ python test_client.py note.png
 # To target a different server: python test_client.py note.png --url http://localhost:9000/recognize
 ```
 
-The client sends base64 JSON and prints the full API response. It uses only the Python standard library.
+The client sends base64 JSON, prints the full API response, and saves it next to the image as `<image-name>.json` (for example, `note.png` creates `note.json`). Running it again overwrites that JSON file. It uses only the Python standard library.
 
 Upload a file with curl:
 

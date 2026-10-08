@@ -33,7 +33,11 @@ def main():
     except urllib.error.URLError as exc:
         parser.exit(1, f"Could not connect to OCR service: {exc.reason}\n")
 
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    output = args.image.with_suffix(".json")
+    formatted = json.dumps(result, indent=2, ensure_ascii=False)
+    output.write_text(formatted + "\n", encoding="utf-8")
+    print(formatted)
+    print(f"Saved response to {output}")
 
 
 if __name__ == "__main__":
